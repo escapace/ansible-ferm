@@ -1,0 +1,80 @@
+domain ip table filter {
+    chain INPUT {
+        policy DROP;
+
+        # connection tracking
+        mod state state INVALID DROP;
+        mod state state (ESTABLISHED RELATED) ACCEPT;
+
+        # allow local connections
+        interface lo ACCEPT;
+
+        # respond to ping
+        proto icmp icmp-type echo-request mod limit limit 900/min ACCEPT;
+    }
+
+    # outgoing connections are not limited
+    chain OUTPUT policy ACCEPT;
+
+    chain FORWARD policy DROP;
+}
+
+domain ip6 table filter {
+    chain INPUT {
+        policy DROP;
+
+        mod rt rt-type 0 DROP;
+
+        # connection tracking
+        mod state state INVALID DROP;
+        mod state state (ESTABLISHED RELATED) ACCEPT;
+
+        # allow local connections
+        interface lo ACCEPT;
+
+        # allow ICMP (for neighbor solicitation, like ARP for IPv4)
+        # proto ipv6-icmp ACCEPT;
+
+        # Mobile prefix discovery replies
+        proto ipv6-icmp icmpv6-type (145 147) mod limit limit 900/min ACCEPT;
+    }
+
+    # outgoing connections are not limited
+    chain OUTPUT {
+        policy ACCEPT;
+
+        mod rt rt-type 0 DROP;
+
+        # Mobile prefix discovery requests
+        proto ipv6-icmp icmpv6-type (144 146) mod limit limit 900/min ACCEPT;
+    }
+
+    chain (INPUT OUTPUT) {
+        # Allow but rate-limit echo request/reply
+        proto ipv6-icmp icmpv6-type (128 129) mod limit limit 900/min ACCEPT;
+        # Allow router advertisements on local network segments
+        proto ipv6-icmp icmpv6-type (133 134 135 136 137) mod hl hl-eq 255 ACCEPT;
+        # Allow RFC 4890 but with rate-limiting
+        proto ipv6-icmp icmpv6-type
+            (1 2 3/0 3/1 4/0 4/1 4/2 128 129 130 131 132 133 141 142 143 148 149 151 152 153)
+            mod limit limit 900/min ACCEPT;
+    }
+
+    chain FORWARD {
+        policy DROP;
+
+        mod rt rt-type 0 DROP;
+
+        # RFC 4890
+        proto ipv6-icmp icmpv6-type
+            (1 2 3/0 3/1 4/0 4/1 4/2 128 129 130 131 132 133 141 142 143 148 149 151 152 153)
+            ACCEPT;
+
+        # Mobile prefix discovery
+        proto ipv6-icmp icmpv6-type (144 145 146 147) ACCEPT;
+    }
+
+    chain INPUT {
+        proto ipv6-icmp LOG log-prefix 'Dropped ICMPv6: ';
+    }
+}

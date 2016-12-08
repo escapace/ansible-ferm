@@ -1,0 +1,6 @@
+---
+
+ferm_ipv4_forwarding: 0
+ferm_ipv6_accept_ra: 0
+ferm_ipv6_forwarding: 0
+

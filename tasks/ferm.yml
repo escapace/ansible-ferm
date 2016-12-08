@@ -1,0 +1,36 @@
+---
+
+- name: disable firewalld
+  service:
+    name: firewalld
+    enabled: false
+    state: stopped
+  ignore_errors: yes
+
+- include: dependencies.yml
+
+- name: make sure the directory for firewall rules exist
+  file: path=/etc/ferm state=directory owner=root group=root mode=0700
+
+- name: create config directory
+  file: path=/etc/ferm/ferm.d state=directory owner=root group=root mode=0700
+
+- name: create config directory
+  file: path=/etc/ferm/vars.d state=directory owner=root group=root mode=0700
+
+- name: include ferm.d directory
+  lineinfile: dest=/etc/ferm/ferm.conf line="@include 'ferm.d/';" insertbefore=BOF create=yes mode=0600
+
+- name: include vars.d directory
+  lineinfile: dest=/etc/ferm/ferm.conf line="@include 'vars.d/';" insertbefore=BOF create=yes mode=0600
+
+- name: create ferm service
+  template: src=templates/ferm.service.j2 dest=/usr/lib/systemd/system/ferm.service owner=root group=root
+
+- name: create the default ferm conf files
+  template: src=templates/1000-default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
+
+- name: enable ferm on boot
+  service: name=ferm enabled=yes
+
+- include: sysctl.yml

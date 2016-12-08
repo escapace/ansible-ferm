@@ -1,0 +1,44 @@
+---
+
+- name: set ipv4 forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: "{{ ferm_ipv4_forwarding }}"
+    state: present
+
+- name: set ipv6 forwarding
+  sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: "{{ ferm_ipv6_forwarding }}"
+    state: present
+
+- name: set ipv6 forwarding by default
+  sysctl:
+    name: net.ipv6.conf.default.forwarding
+    value: "{{ ferm_ipv6_forwarding }}"
+    state: present
+
+- name: set ipv6 router advertisement
+  sysctl:
+    name: net.ipv6.conf.default.accept_ra
+    value: "{{ ferm_ipv6_accept_ra }}"
+    state: present
+
+- name: set ipv6 router advertisement by default
+  sysctl:
+    name: net.ipv6.conf.all.accept_ra
+    value: "{{ ferm_ipv6_accept_ra }}"
+    state: present
+
+- name: enable the ipv6 privacy extensions
+  sysctl:
+    name: net.ipv6.conf.all.use_tempaddr
+    value: 2
+    state: present
+
+- name: enable the ipv6 privacy extensions by default
+  sysctl:
+    name: net.ipv6.conf.default.use_tempaddr
+    value: 2
+    state: present
+
