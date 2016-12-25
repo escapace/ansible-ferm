@@ -16,8 +16,8 @@ ferm role
 Available variables are listed below, along with default values:
 
 ```yaml
-ferm_ipv4_forwarding: 0
-ferm_ipv6_forwarding: 0
+ferm_ipv4_forwarding: 1
+ferm_ipv6_forwarding: 1
 ferm_ipv6_accept_ra: 0
 ```
 
