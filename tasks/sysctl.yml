@@ -36,4 +36,4 @@
     value: "{{ item.value }}"
     state: present
   with_items: "{{ ferm_kernel_params }}"
-  ignore_errors: yes
+  ignore_errors: ferm_role_debug
