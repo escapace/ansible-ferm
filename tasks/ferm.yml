@@ -7,7 +7,7 @@
     state: stopped
   ignore_errors: yes
 
-- include: dependencies.yml
+- include_tasks: dependencies.yml
 
 - name: make sure the directory for firewall rules exist
   file: path=/etc/ferm state=directory owner=root group=root mode=0700
@@ -33,4 +33,4 @@
 - name: enable ferm on boot
   service: name=ferm enabled=yes
 
-- include: sysctl.yml
+- include_tasks: sysctl.yml

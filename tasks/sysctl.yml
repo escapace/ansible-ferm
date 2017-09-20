@@ -36,4 +36,9 @@
     value: "{{ item.value }}"
     state: present
   with_items: "{{ ferm_kernel_params }}"
-  ignore_errors: ferm_role_debug
+  register: ferm_kernel_params_result
+  ignore_errors: True
+
+- name: failed to set recommended kernel parameters
+  fail: msg="failed to set recommended kernel parameters"
+  when: (ferm_kernel_params_result|failed and (ferm_role_debug|bool == false))

@@ -1,4 +1,4 @@
 ---
 
-- include: ferm.yml
+- include_tasks: ferm.yml
   when: ansible_os_family == "RedHat"
