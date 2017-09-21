@@ -1,16 +1,3 @@
-<p align="right">
-    <a href="https://travis-ci.org/epiloque/ansible-ferm">
-        <img src="https://travis-ci.org/epiloque/ansible-ferm.svg?branch=master"
-             alt="build status">
-    </a>
-        <a href="https://galaxy.ansible.com/epiloque/ferm">
-        <img src="https://img.shields.io/badge/ansible--galaxy-ferm-blue.svg"
-             alt="ansible galaxy">
-    </a>
-</p>
-
-ferm role
-
 ## Role Variables
 
 Available variables are listed below, along with default values:
@@ -33,7 +20,3 @@ forwarding will result in rejecting Router Advertisements.
   roles:
     - epiloque.ferm
 ```
-
-## License
-
-BSD
