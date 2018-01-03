@@ -8,4 +8,4 @@
   vars:
     ferm_role_debug: true
   roles:
-  - role: epiloque.ferm
+  - role: escapace.ferm
