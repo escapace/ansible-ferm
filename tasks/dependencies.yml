@@ -1,8 +1,7 @@
 ---
 
-- name: install iptables & ferm dependencies
-  action: "{{ ansible_pkg_mgr }} name={{ item }} state=present"
-  with_items:
-    - ferm
-    - iptables
+- name: install packages
+  package:
+    name: ["ferm", "iptables"]
+    state: present
 

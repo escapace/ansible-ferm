@@ -41,4 +41,4 @@
 
 - name: failed to set recommended kernel parameters
   fail: msg="failed to set recommended kernel parameters"
-  when: (ferm_kernel_params_result|failed and (ferm_role_debug|bool == false))
+  when: (ferm_kernel_params_result is failed and (ferm_role_debug|bool == false))
