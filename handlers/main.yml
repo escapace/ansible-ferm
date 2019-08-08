@@ -2,4 +2,4 @@
 
 - name: ferm restart
   service: name=ferm state=restarted
-
+  when: not ferm_role_debug
