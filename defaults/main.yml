@@ -1,8 +1,8 @@
 ---
 
-ferm_ipv4_forwarding: 1
-ferm_ipv6_forwarding: 1
-ferm_ipv6_accept_ra: 0
+ferm_ipv4_forwarding: true
+ferm_ipv6_forwarding: true
+ferm_ipv6_accept_ra: false
 ferm_role_debug: false
 
 ferm_kernel_params:

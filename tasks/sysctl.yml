@@ -3,31 +3,40 @@
 - name: set ipv4 forwarding
   sysctl:
     name: net.ipv4.ip_forward
-    value: "{{ ferm_ipv4_forwarding }}"
+    value: "{{ ferm_ipv4_forwarding | ternary('1','0') }}"
     state: present
 
 - name: set ipv6 forwarding
   sysctl:
     name: net.ipv6.conf.all.forwarding
-    value: "{{ ferm_ipv6_forwarding }}"
+    value: "{{ ferm_ipv6_forwarding | ternary('1','0') }}"
     state: present
+
+- name: set ipv6 forwarding
+  lineinfile:
+    path: /etc/sysconfig/network
+    regexp: "^IPV6FORWARDING="
+    line: "IPV6FORWARDING={{ ferm_ipv6_forwarding | ternary('yes','no') }}"
+    owner: root
+    group: root
+    mode: 0644
 
 - name: set ipv6 forwarding by default
   sysctl:
     name: net.ipv6.conf.default.forwarding
-    value: "{{ ferm_ipv6_forwarding }}"
+    value: "{{ ferm_ipv6_forwarding | ternary('1','0') }}"
     state: present
 
 - name: set ipv6 router advertisement
   sysctl:
     name: net.ipv6.conf.default.accept_ra
-    value: "{{ ferm_ipv6_accept_ra }}"
+    value: "{{ ferm_ipv6_accept_ra | ternary('1','0') }}"
     state: present
 
 - name: set ipv6 router advertisement by default
   sysctl:
     name: net.ipv6.conf.all.accept_ra
-    value: "{{ ferm_ipv6_accept_ra }}"
+    value: "{{ ferm_ipv6_accept_ra | ternary('1','0') }}"
     state: present
 
 - name: set recommended kernel parameters

@@ -1,0 +1,2 @@
+@def $DEFAULT_V4_DEV = `ip -4 route show 0.0.0.0/0 | awk '/default/ { print $5 }'`;
+@def $DEFAULT_V6_DEV = `ip -6 route show ::/0 | awk '/default/ { print $5 }'`;

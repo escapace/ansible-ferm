@@ -2,6 +2,18 @@
 
 - name: install packages
   package:
-    name: ["ferm", "iptables"]
+    name: ["ferm", "iptables", "gawk"]
     state: present
+
+- name: install iproute
+  package:
+    name: iproute
+    state: present
+  when: ansible_os_family == "RedHat"
+
+- name: install iproute
+  package:
+    name: iproute2
+    state: present
+  when: ansible_os_family == "Debian"
 
