@@ -17,6 +17,7 @@
     path: /etc/sysconfig/network
     regexp: "^IPV6FORWARDING="
     line: "IPV6FORWARDING={{ ferm_ipv6_forwarding | ternary('yes','no') }}"
+    create: yes
     owner: root
     group: root
     mode: 0644
