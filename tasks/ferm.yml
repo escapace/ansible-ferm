@@ -29,11 +29,16 @@
 
 - name: create the default ferm conf files
   template: src=templates/1000-default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
+  notify:
+    - ferm restart
 
 - name: create the default ferm var files
   template: src=templates/10-default.conf.j2 dest=/etc/ferm/vars.d/10-default.conf owner=root group=root mode=0600
+  notify:
+    - ferm restart
 
 - name: enable ferm on boot
   service: name=ferm enabled=yes
 
 - include_tasks: sysctl.yml
+  when: not ferm_role_debug|bool

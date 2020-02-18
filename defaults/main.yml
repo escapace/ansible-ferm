@@ -26,4 +26,3 @@ ferm_kernel_params:
   - { name: net.ipv4.tcp_rfc1337, value: 1 }
   - { name: kernel.randomize_va_space, value: 2 }
   - { name: kernel.panic, value: 10 }
-
