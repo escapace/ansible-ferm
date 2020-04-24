@@ -1,0 +1,10 @@
+@include 'ferm.d/1000-default.conf';
+
+domain (ip6 ip) table filter {
+    chain INPUT {
+        saddr (10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 fd00::/8) {
+            proto tcp mod addrtype dst-type LOCAL dport ssh ACCEPT;
+        }
+    }
+}
+

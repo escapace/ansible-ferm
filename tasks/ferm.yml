@@ -26,6 +26,16 @@
 
 - name: create ferm service
   template: src=templates/ferm.service.j2 dest=/usr/lib/systemd/system/ferm.service owner=root group=root
+  notify:
+    - ferm daemon-reload
+
+- name: create ferm-pre service
+  template: src=templates/ferm-pre.service.j2 dest=/usr/lib/systemd/system/ferm-pre.service owner=root group=root
+  notify:
+    - ferm daemon-reload
+
+- name: create the default ferm conf files
+  template: src=templates/ferm-pre.conf.j2 dest=/etc/ferm/ferm-pre.conf owner=root group=root mode=0600
 
 - name: create the default ferm conf files
   template: src=templates/1000-default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
@@ -36,6 +46,33 @@
   template: src=templates/10-default.conf.j2 dest=/etc/ferm/vars.d/1000-default.conf owner=root group=root mode=0600
   notify:
     - ferm restart
+
+- name: enable NetworkManager-wait-online service
+  service: name=NetworkManager-wait-online.service enabled=yes
+
+- name: create selinux policy directory
+  file:
+    path: /opt/escapace-ferm/
+    state: directory
+    mode: '0750'
+
+- name: copy selinux policy
+  copy:
+    src: files/selinux/escapace-ferm.pp
+    dest: /opt/escapace-ferm/escapace-ferm.pp
+    owner: root
+    group: root
+    mode: '0640' 
+  register: ferm_selinux_policy
+
+- name: install selinux policy
+  shell: semodule -X 400 -i escapace-ferm.pp
+  args:
+    chdir: /opt/escapace-ferm
+  when: ferm_selinux_policy.changed
+
+- name: enable ferm-pre on boot
+  service: name=ferm-pre enabled=yes
 
 - name: enable ferm on boot
   service: name=ferm enabled=yes

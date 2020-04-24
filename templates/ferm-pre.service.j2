@@ -1,0 +1,13 @@
+[Unit]
+Description=for Easy Rule Making - before any network interface is configured
+Before=ferm.service
+Before=network-pre.target
+Wants=network-pre.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=no
+ExecStart=/usr/sbin/ferm /etc/ferm/ferm-pre.conf
+
+[Install]
+WantedBy=multi-user.target

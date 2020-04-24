@@ -62,7 +62,7 @@ domain ip6 table filter {
 
     chain FORWARD {
         policy DROP;
-
+        mod state state INVALID DROP;
         mod rt rt-type 0 DROP;
 
         # RFC 4890
