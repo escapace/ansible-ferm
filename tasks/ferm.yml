@@ -1,5 +1,4 @@
 ---
-
 - name: disable firewalld
   service:
     name: firewalld
@@ -49,12 +48,13 @@
 
 - name: enable NetworkManager-wait-online service
   service: name=NetworkManager-wait-online.service enabled=yes
+  when: not ferm_role_debug|bool
 
 - name: create selinux policy directory
   file:
     path: /opt/escapace-ferm/
     state: directory
-    mode: '0750'
+    mode: "0750"
 
 - name: copy selinux policy
   copy:
@@ -62,14 +62,14 @@
     dest: /opt/escapace-ferm/escapace-ferm.pp
     owner: root
     group: root
-    mode: '0640' 
+    mode: "0640"
   register: ferm_selinux_policy
 
 - name: install selinux policy
   shell: semodule -X 400 -i escapace-ferm.pp
   args:
     chdir: /opt/escapace-ferm
-  when: ferm_selinux_policy.changed
+  when: ferm_selinux_policy.changed and (not ferm_role_debug|bool)
 
 - name: enable ferm-pre on boot
   service: name=ferm-pre enabled=yes
