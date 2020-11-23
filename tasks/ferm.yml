@@ -24,12 +24,12 @@
   lineinfile: dest=/etc/ferm/ferm.conf line="@include 'vars.d/';" insertbefore=BOF create=yes mode=0600
 
 - name: create ferm service
-  template: src=templates/ferm.service.j2 dest=/usr/lib/systemd/system/ferm.service owner=root group=root
+  template: src=templates/ferm.service.j2 dest=/usr/lib/systemd/system/ferm.service owner=root group=root mode=0644
   notify:
     - ferm daemon-reload
 
 - name: create ferm-pre service
-  template: src=templates/ferm-pre.service.j2 dest=/usr/lib/systemd/system/ferm-pre.service owner=root group=root
+  template: src=templates/ferm-pre.service.j2 dest=/usr/lib/systemd/system/ferm-pre.service owner=root group=root mode=0644
   notify:
     - ferm daemon-reload
 
