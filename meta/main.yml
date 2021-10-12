@@ -18,6 +18,3 @@ galaxy_info:
   - ferm
   - firewall
   - iptables
-
-dependencies:
-   - { role: escapace.packagecloud }
