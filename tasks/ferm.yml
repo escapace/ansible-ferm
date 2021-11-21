@@ -46,6 +46,12 @@
   notify:
     - ferm restart
 
+- name: copy aws-metadata ferm conf files
+  copy: src=files/9999-aws-metadata.conf dest=/etc/ferm/ferm.d/9999-aws-metadata.conf owner=root group=root mode=0600
+  when: provider == "ec2"
+  notify:
+    - ferm restart
+
 - name: enable NetworkManager-wait-online service
   service: name=NetworkManager-wait-online.service enabled=yes
   when: not ferm_role_debug|bool
