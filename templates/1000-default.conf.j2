@@ -20,61 +20,113 @@ domain ip table filter {
 }
 
 domain ip6 table filter {
+    chain (INPUT OUTPUT FORWARD) {
+        mod rt rt-type 0 DROP;
+
+        # Mobile IPv6 messages that are needed to assist mobility
+        # It may be desirable to drop these messages, especially on public
+        # interfaces, if the firewall is not also providing mobile home agent
+        # services, but they will be ignored otherwise.
+        proto ipv6-icmp icmpv6-type (144 145 146 147) DROP;
+
+        # The message used by the experimental Seamoby protocols may be dropped
+        # but will be ignored if the service is not implemented:
+        proto ipv6-icmp icmpv6-type 150 DROP;
+
+        # Messages with types in the experimental allocations
+        proto ipv6-icmp icmpv6-type (100 101 200 201) DROP;
+
+        # Messages using the extension type numbers until such time as ICMPv6
+        # needs to use such extensions:
+        proto ipv6-icmp icmpv6-type (127 255) DROP;
+
+        # All informational messages with types not explicitly assigned by IANA,
+        # currently
+        # proto ipv6-icmp icmpv6-type 154-199 DROP;
+        # proto ipv6-icmp icmpv6-type 202-254 DROP;
+
+        # Unallocated Error messages
+        # proto ipv6-icmp icmpv6-type 5-99 DROP;
+        # proto ipv6-icmp icmpv6-type 102-126 DROP;
+
+        # Redirect
+        proto ipv6-icmp icmpv6-type (137) DROP;
+
+        # Experimental Node Information service
+        proto ipv6-icmp icmpv6-type (139 140) DROP;
+    }
+
     chain INPUT {
         policy DROP;
-
-        mod rt rt-type 0 DROP;
 
         # connection tracking
         mod state state INVALID DROP;
         mod state state (ESTABLISHED RELATED) ACCEPT;
 
+        mod state state NEW proto udp saddr fe80::/64 daddr fe80::/64 dport 546 ACCEPT;
+
         # allow local connections
         interface lo ACCEPT;
 
-        # allow ICMP (for neighbor solicitation, like ARP for IPv4)
-        # proto ipv6-icmp ACCEPT;
+        # Error messages that are essential to the establishment and
+        # maintenance of communications
+        proto ipv6-icmp icmpv6-type destination-unreachable ACCEPT;
+        proto ipv6-icmp icmpv6-type packet-too-big ACCEPT;
+        proto ipv6-icmp icmpv6-type (3/0 3/1) ACCEPT;
+        proto ipv6-icmp icmpv6-type (4/0 4/1 4/2) ACCEPT;
 
-        # Mobile prefix discovery replies
-        proto ipv6-icmp icmpv6-type (145 147) mod limit limit 900/min ACCEPT;
-    }
+        # Connectivity checking messages
+        saddr fe80::/10 proto ipv6-icmp icmpv6-type (echo-request echo-reply) ACCEPT;
+        proto ipv6-icmp icmpv6-type (echo-request echo-reply) mod limit limit 900/min ACCEPT;
 
-    # outgoing connections are not limited
-    chain OUTPUT {
-        policy ACCEPT;
+        # Address Configuration and Router Selection messages
+        proto ipv6-icmp icmpv6-type router-solicitation mod hl hl-eq 255 ACCEPT;
+        proto ipv6-icmp icmpv6-type router-advertisement mod hl hl-eq 255 ACCEPT;
+        proto ipv6-icmp icmpv6-type neighbor-solicitation mod hl hl-eq 255 ACCEPT;
+        proto ipv6-icmp icmpv6-type neighbor-advertisement mod hl hl-eq 255 ACCEPT;
 
-        mod rt rt-type 0 DROP;
+        # A redirection attack could be used by a malicious sender to perform
+        # man-in-the-middle attacks or divert packets either to a malicious
+        # monitor or to cause DoS by blackholing the packets.
+        # https://datatracker.ietf.org/doc/html/rfc4890#section-3.3
 
-        # Mobile prefix discovery requests
-        proto ipv6-icmp icmpv6-type (144 146) mod limit limit 900/min ACCEPT;
-    }
+        # saddr fe80::/10 proto ipv6-icmp icmpv6-type redirect mod hl hl-eq 255 ACCEPT;
 
-    chain (INPUT OUTPUT) {
-        # Allow but rate-limit echo request/reply
-        proto ipv6-icmp icmpv6-type (128 129) mod limit limit 900/min ACCEPT;
-        # Allow router advertisements on local network segments
-        proto ipv6-icmp icmpv6-type (133 134 135 136 137) mod hl hl-eq 255 ACCEPT;
-        # Allow RFC 4890 but with rate-limiting
-        proto ipv6-icmp icmpv6-type
-            (1 2 3/0 3/1 4/0 4/1 4/2 128 129 130 131 132 133 141 142 143 148 149 151 152 153)
-            mod limit limit 900/min ACCEPT;
+        # Link-local multicast receiver notification messages
+        saddr fe80::/10 proto ipv6-icmp icmpv6-type (130 131 132 143) mod hl hl-eq 255 ACCEPT;
+
+        # SEND Certificate Path notification messages
+        saddr fe80::/10 proto ipv6-icmp icmpv6-type (148 149) ACCEPT;
+
+        # Multicast Router Discovery messages
+        saddr fe80::/10 proto ipv6-icmp icmpv6-type (151 152 153) ACCEPT;
     }
 
     chain FORWARD {
         policy DROP;
         mod state state INVALID DROP;
-        mod rt rt-type 0 DROP;
 
-        # RFC 4890
-        proto ipv6-icmp icmpv6-type
-            (1 2 3/0 3/1 4/0 4/1 4/2 128 129 130 131 132 133 141 142 143 148 149 151 152 153)
-            ACCEPT;
+        proto ipv6-icmp icmpv6-type destination-unreachable ACCEPT;
+        proto ipv6-icmp icmpv6-type packet-too-big ACCEPT;
+        proto ipv6-icmp icmpv6-type (3/0) ACCEPT;
+        proto ipv6-icmp icmpv6-type (4/1 4/2) ACCEPT;
 
-        # Mobile prefix discovery
-        proto ipv6-icmp icmpv6-type (144 145 146 147) ACCEPT;
+        proto ipv6-icmp icmpv6-type (echo-request echo-reply) mod limit limit 900/min ACCEPT;
+
+        # Address Configuration and Router Selection message
+        proto ipv6-icmp icmpv6-type (133 134 135 136 141 142) mod hl hl-eq 255 ACCEPT;
+
+        # Link-local multicast receiver notification messages
+        saddr fe80::/10 proto ipv6-icmp icmpv6-type (130 131 132 143) ACCEPT;
+
+        # SEND Certificate Path notification message
+        proto ipv6-icmp icmpv6-type (148 149) mod hl hl-eq 255 ACCEPT;
+
+        # Multicast Router Discovery messages
+        saddr fe80::/10 proto ipv6-icmp icmpv6-type (151 152 153) mod hl hl-eq 1 ACCEPT;
     }
 
-    chain INPUT {
-        proto ipv6-icmp LOG log-prefix 'Dropped ICMPv6: ';
+    chain OUTPUT {
+        policy ACCEPT;
     }
 }
