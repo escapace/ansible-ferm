@@ -38,25 +38,17 @@
 
 - name: create the default ferm conf files
   template: src=templates/1000-default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
-  notify:
-    - ferm restart
 
 - name: create the default ferm var files
   template: src=templates/10-default.conf.j2 dest=/etc/ferm/vars.d/1000-default.conf owner=root group=root mode=0600
-  notify:
-    - ferm restart
 
 - name: copy ec2 metadata ferm conf files
   copy: src=files/9000-ec2-metadata.conf dest=/etc/ferm/ferm.d/9000-ec2-metadata.conf owner=root group=root mode=0600
   when: provider is defined and provider == "ec2"
-  notify:
-    - ferm restart
 
 - name: create the ec2 ferm var files
   template: src=files/1005-ec2-vpc.conf dest=/etc/ferm/vars.d/1005-ec2-vpc.conf owner=root group=root mode=0600
   when: provider is defined and provider == "ec2"
-  notify:
-    - ferm restart
 
 - name: enable NetworkManager-wait-online service
   service: name=NetworkManager-wait-online.service enabled=yes
