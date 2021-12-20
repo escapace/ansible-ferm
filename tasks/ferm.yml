@@ -37,17 +37,17 @@
   template: src=templates/ferm-pre.conf.j2 dest=/etc/ferm/ferm-pre.conf owner=root group=root mode=0600
 
 - name: create the default ferm conf files
-  template: src=templates/1000-default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
+  template: src=templates/default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
 
 - name: create the default ferm var files
-  template: src=templates/10-default.conf.j2 dest=/etc/ferm/vars.d/1000-default.conf owner=root group=root mode=0600
+  template: src=templates/default-variables.conf.j2 dest=/etc/ferm/vars.d/1000-default.conf owner=root group=root mode=0600
 
 - name: copy ec2 metadata ferm conf files
-  copy: src=files/9000-ec2-metadata.conf dest=/etc/ferm/ferm.d/9000-ec2-metadata.conf owner=root group=root mode=0600
+  template: src=templates/ec2-metadata.conf.j2 dest=/etc/ferm/ferm.d/9000-ec2-metadata.conf owner=root group=root mode=0600
   when: provider is defined and provider == "ec2"
 
 - name: create the ec2 ferm var files
-  template: src=files/1005-ec2-vpc.conf dest=/etc/ferm/vars.d/1005-ec2-vpc.conf owner=root group=root mode=0600
+  template: src=templates/ec2-vpc-variables.conf.j2 dest=/etc/ferm/vars.d/1005-ec2-vpc.conf owner=root group=root mode=0600
   when: provider is defined and provider == "ec2"
 
 - name: enable NetworkManager-wait-online service
@@ -59,7 +59,7 @@
     path: /opt/escapace-ferm/
     state: directory
     mode: "0750"
-  when: ansible_selinux and ansible_selinux.status == 'enabled'
+  when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
 
 - name: copy selinux policy
   copy:
@@ -68,7 +68,7 @@
     owner: root
     group: root
     mode: "0640"
-  when: ansible_selinux and ansible_selinux.status == 'enabled'
+  when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
   register: ferm_selinux_policy
 
 - name: install selinux policy
@@ -76,6 +76,12 @@
   args:
     chdir: /opt/escapace-ferm
   when: ansible_selinux and ansible_selinux.status == 'enabled' and ferm_selinux_policy.changed and (not ferm_role_debug|bool)
+
+- name: delete selinux policy
+  ansible.builtin.file:
+    path: /opt/escapace-ferm
+    state: absent
+  when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
 
 - name: enable ferm-pre on boot
   service: name=ferm-pre enabled=yes

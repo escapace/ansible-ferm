@@ -1,8 +1,0 @@
-@def $DEFAULT_V4_CIDR = `ip -o -4 addr show $(ip -4 route show 0.0.0.0/0 | awk '/default/ { print $5 }') | awk '/inet/ { print $4 }'`;
-@def $DEFAULT_V4_DEV = `ip -4 route show 0.0.0.0/0 | awk '/default/ { print $5 }'`;
-@def $DEFAULT_V4_IP = `ip -o -4 addr show $(ip -4 route show 0.0.0.0/0 | awk '/default/ { print $5 }') | awk '/inet/ { print $4 }' | cut -d/ -f1`;
-@def $DEFAULT_V6_CIDR = `ip -o -6 addr show $(ip -6 route show ::/0 | awk '/default/ { print $5 }') scope global | awk '/inet6/ { print $4 }'`;
-@def $DEFAULT_V6_DEV = `ip -6 route show ::/0 | awk '/default/ { print $5 }'`;
-@def $DEFAULT_V6_IP = `ip -o -6 addr show $(ip -6 route show ::/0 | awk '/default/ { print $5 }') scope global | awk '/inet6/ { print $4 }' | cut -d/ -f1`;
-
-
