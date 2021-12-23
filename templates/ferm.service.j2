@@ -2,6 +2,8 @@
 Description=for Easy Rule Making
 After=network-online.target
 Wants=network-online.target
+After=kresd.target
+Wants=kresd.target
 
 [Service]
 Type=oneshot

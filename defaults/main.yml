@@ -3,7 +3,13 @@
 ferm_rpm: "https://github.com/escapace/rpmbuild/releases/download/v1.2.3/ferm-2.5.1-1.el8.noarch.rpm"
 ferm_ipv4_forwarding: true
 ferm_ipv6_forwarding: true
-ferm_ipv6_accept_ra: false
+
+# 0 Do not accept Router Advertisements.
+# 1 Accept Router Advertisements if forwarding is disabled.
+# 2 Overrule forwarding behaviour. Accept Router Advertisements even if
+#   forwarding is enabled.
+ferm_ipv6_accept_ra: 1
+
 ferm_role_debug: false
 
 ferm_kernel_params:
