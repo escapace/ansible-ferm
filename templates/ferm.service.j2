@@ -4,6 +4,8 @@ After=network-online.target
 Wants=network-online.target
 After=kresd.target
 Wants=kresd.target
+After=nss-lookup.target
+Wants=nss-lookup.target
 
 [Service]
 Type=oneshot

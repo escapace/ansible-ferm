@@ -23,6 +23,14 @@
 - name: include vars.d directory
   lineinfile: dest=/etc/ferm/ferm.conf line="@include 'vars.d/';" insertbefore=BOF create=yes mode=0600
 
+- name: create directory for ferm systemd drop-ins
+  file:
+    path: /etc/systemd/system/ferm.service.d
+    owner: root
+    group: root
+    state: directory
+    mode: 0755
+
 - name: create ferm service
   template: src=templates/ferm.service.j2 dest=/usr/lib/systemd/system/ferm.service owner=root group=root mode=0644
   notify:
@@ -42,23 +50,15 @@
 - name: create the default ferm var files
   template: src=templates/default-variables.conf.j2 dest=/etc/ferm/vars.d/1000-default.conf owner=root group=root mode=0600
 
-- name: copy ec2 metadata ferm conf files
-  template: src=templates/ec2-metadata.conf.j2 dest=/etc/ferm/ferm.d/9000-ec2-metadata.conf owner=root group=root mode=0600
-  when: provider is defined and provider == "ec2"
-
-- name: create the ec2 ferm var files
-  template: src=templates/ec2-vpc-variables.conf.j2 dest=/etc/ferm/vars.d/1005-ec2-vpc.conf owner=root group=root mode=0600
-  when: provider is defined and provider == "ec2"
-
-- name: enable NetworkManager-wait-online service
-  service: name=NetworkManager-wait-online.service enabled=yes
-  when: not ferm_role_debug|bool
+# - name: enable NetworkManager-wait-online service
+#   service: name=NetworkManager-wait-online.service enabled=yes
+#   when: not ferm_role_debug|bool
 
 - name: create selinux policy directory
   file:
     path: /opt/escapace-ferm/
     state: directory
-    mode: "0750"
+    mode: 0750
   when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
 
 - name: copy selinux policy
@@ -67,7 +67,7 @@
     dest: /opt/escapace-ferm/escapace-ferm.pp
     owner: root
     group: root
-    mode: "0640"
+    mode: 0640
   when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
   register: ferm_selinux_policy
 
@@ -91,3 +91,6 @@
 
 - include_tasks: sysctl.yml
   when: not ferm_role_debug|bool
+
+- include_tasks: provider-ec2.yml
+  when: provider is defined and provider == "ec2"
