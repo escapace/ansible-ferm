@@ -1,5 +1,9 @@
 ---
 
+- name: include escapace.aws_environment role
+  include_role:
+    name: escapace.aws_environment
+
 - name: copy ec2-metadata.conf
   template: src=templates/ec2-metadata.conf.j2 dest=/etc/ferm/ferm.d/9000-ec2-metadata.conf owner=root group=root mode=0600
 
