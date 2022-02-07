@@ -11,10 +11,13 @@ galaxy_info:
   platforms:
   - name: EL
     versions:
-    - 8
+    - 9
 
   galaxy_tags:
   - escapace
   - ferm
   - firewall
   - iptables
+
+dependencies:
+  - { role: escapace.escapace_releases }

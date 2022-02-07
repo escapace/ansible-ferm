@@ -1,6 +1,5 @@
 ---
 
-ferm_rpm: "https://github.com/escapace/rpmbuild/releases/download/v1.2.3/ferm-2.5.1-1.el8.noarch.rpm"
 ferm_ipv4_forwarding: true
 ferm_ipv6_forwarding: true
 

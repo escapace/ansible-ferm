@@ -2,11 +2,10 @@
 
 - name: install dependencies
   package:
-    name: ["iptables", "gawk", "iproute"]
+    name: ["iptables-nft", "gawk", "iproute"]
     state: present
 
 - name: install ferm
   dnf:
-    name: "{{ ferm_rpm }}"
-    disable_gpg_check: yes
-    state: present 
+    name: ferm
+    state: present
