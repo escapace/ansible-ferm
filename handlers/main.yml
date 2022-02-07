@@ -2,5 +2,5 @@
 
 - name: ferm daemon-reload
   systemd:
-    daemon_reload: yes
-  when: not ferm_role_debug
+    daemon_reload: true
+  when: not ferm_role_debug|bool

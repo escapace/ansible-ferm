@@ -4,4 +4,4 @@
   vars:
     ferm_role_debug: true
   roles:
-  - role: escapace.ferm
+    - role: escapace.ferm
