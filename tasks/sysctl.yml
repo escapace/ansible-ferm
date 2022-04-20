@@ -1,19 +1,19 @@
 ---
 
 - name: set ipv4 forwarding
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv4.ip_forward
     value: "{{ ferm_ipv4_forwarding | ternary('1','0') }}"
     state: present
 
 - name: set ipv6 forwarding
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv6.conf.all.forwarding
     value: "{{ ferm_ipv6_forwarding | ternary('1','0') }}"
     state: present
 
 - name: set ipv6 forwarding
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/sysconfig/network
     regexp: "^IPV6FORWARDING="
     line: "IPV6FORWARDING={{ ferm_ipv6_forwarding | ternary('yes','no') }}"
@@ -23,25 +23,25 @@
     mode: 0644
 
 - name: set ipv6 forwarding by default
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv6.conf.default.forwarding
     value: "{{ ferm_ipv6_forwarding | ternary('1','0') }}"
     state: present
 
 - name: set ipv6 router advertisement
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv6.conf.default.accept_ra
     value: "{{ ferm_ipv6_accept_ra }}"
     state: present
 
 - name: set ipv6 router advertisement by default
-  sysctl:
+  ansible.posix.sysctl:
     name: net.ipv6.conf.all.accept_ra
     value: "{{ ferm_ipv6_accept_ra }}"
     state: present
 
 - name: set recommended kernel parameters
-  sysctl:
+  ansible.posix.sysctl:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
     state: present

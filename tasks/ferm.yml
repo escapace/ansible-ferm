@@ -1,7 +1,7 @@
 ---
 
 - name: disable firewalld
-  service:
+  ansible.builtin.service:
     name: firewalld
     enabled: false
     state: stopped
@@ -12,22 +12,22 @@
 - include_tasks: dependencies.yml
 
 - name: make sure the directory for firewall rules exist
-  file: path=/etc/ferm state=directory owner=root group=root mode=0700
+  ansible.builtin.file: path=/etc/ferm state=directory owner=root group=root mode=0700
 
 - name: create config directory
-  file: path=/etc/ferm/ferm.d state=directory owner=root group=root mode=0700
+  ansible.builtin.file: path=/etc/ferm/ferm.d state=directory owner=root group=root mode=0700
 
 - name: create config directory
-  file: path=/etc/ferm/vars.d state=directory owner=root group=root mode=0700
+  ansible.builtin.file: path=/etc/ferm/vars.d state=directory owner=root group=root mode=0700
 
 - name: include ferm.d directory
-  lineinfile: dest=/etc/ferm/ferm.conf line="@include 'ferm.d/';" insertbefore=BOF create=yes mode=0600
+  ansible.builtin.lineinfile: dest=/etc/ferm/ferm.conf line="@include 'ferm.d/';" insertbefore=BOF create=yes mode=0600
 
 - name: include vars.d directory
-  lineinfile: dest=/etc/ferm/ferm.conf line="@include 'vars.d/';" insertbefore=BOF create=yes mode=0600
+  ansible.builtin.lineinfile: dest=/etc/ferm/ferm.conf line="@include 'vars.d/';" insertbefore=BOF create=yes mode=0600
 
 - name: create directory for ferm systemd drop-ins
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/ferm.service.d
     owner: root
     group: root
@@ -35,37 +35,37 @@
     mode: 0755
 
 - name: create ferm service
-  template: src=templates/ferm.service.j2 dest=/usr/lib/systemd/system/ferm.service owner=root group=root mode=0644
+  ansible.builtin.template: src=templates/ferm.service.j2 dest=/usr/lib/systemd/system/ferm.service owner=root group=root mode=0644
   notify:
     - ferm daemon-reload
 
 - name: create ferm-pre service
-  template: src=templates/ferm-pre.service.j2 dest=/usr/lib/systemd/system/ferm-pre.service owner=root group=root mode=0644
+  ansible.builtin.template: src=templates/ferm-pre.service.j2 dest=/usr/lib/systemd/system/ferm-pre.service owner=root group=root mode=0644
   notify:
     - ferm daemon-reload
 
 - name: create the default ferm conf files
-  template: src=templates/ferm-pre.conf.j2 dest=/etc/ferm/ferm-pre.conf owner=root group=root mode=0600
+  ansible.builtin.template: src=templates/ferm-pre.conf.j2 dest=/etc/ferm/ferm-pre.conf owner=root group=root mode=0600
 
 - name: create the default ferm conf files
-  template: src=templates/default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
+  ansible.builtin.template: src=templates/default.conf.j2 dest=/etc/ferm/ferm.d/1000-default.conf owner=root group=root mode=0600
 
 - name: create the default ferm var files
-  template: src=templates/default-variables.conf.j2 dest=/etc/ferm/vars.d/1000-default.conf owner=root group=root mode=0600
+  ansible.builtin.template: src=templates/default-variables.conf.j2 dest=/etc/ferm/vars.d/1000-default.conf owner=root group=root mode=0600
 
 # - name: enable NetworkManager-wait-online service
 #   service: name=NetworkManager-wait-online.service enabled=yes
 #   when: not ferm_role_debug|bool
 
 - name: create selinux policy directory
-  file:
+  ansible.builtin.file:
     path: /opt/escapace-ferm/
     state: directory
     mode: 0750
   when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
 
 - name: copy selinux policy
-  copy:
+  ansible.builtin.copy:
     src: files/selinux/escapace-ferm.pp
     dest: /opt/escapace-ferm/escapace-ferm.pp
     owner: root
@@ -75,7 +75,7 @@
   register: ferm_selinux_policy
 
 - name: install selinux policy
-  shell: semodule -X 400 -i escapace-ferm.pp
+  ansible.builtin.shell: semodule -X 400 -i escapace-ferm.pp
   args:
     chdir: /opt/escapace-ferm
   when: ansible_selinux and ansible_selinux.status == 'enabled' and ferm_selinux_policy.changed and (not ferm_role_debug|bool)
@@ -87,11 +87,11 @@
   when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
 
 - name: enable ferm-pre on boot
-  service: name=ferm-pre enabled=yes
+  ansible.builtin.service: name=ferm-pre enabled=yes
   when: not ferm_role_debug|bool
 
 - name: enable ferm on boot
-  service: name=ferm enabled=yes
+  ansible.builtin.service: name=ferm enabled=yes
   when: not ferm_role_debug|bool
 
 - include_tasks: sysctl.yml

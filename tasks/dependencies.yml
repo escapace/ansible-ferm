@@ -1,11 +1,11 @@
 ---
 
 - name: install dependencies
-  package:
+  ansible.builtin.package:
     name: ["iptables-nft", "gawk", "iproute"]
     state: present
 
 - name: install ferm
-  dnf:
+  ansible.builtin.dnf:
     name: ferm
     state: present
