@@ -55,6 +55,6 @@ ferm_kernel_params:
   - { name: net.ipv4.udp_wmem_min, value: "8192" }
   - { name: net.ipv4.tcp_adv_win_scale, value: "-2" }
   - { name: net.ipv4.tcp_notsent_lowat, value: "131072" }
-  - { name: net.ipv4.tcp_collapse_max_bytes, value: "6291456" }
   - { name: net.ipv4.tcp_rmem, value: "8192 262144 536870912" }
   - { name: net.ipv4.tcp_wmem, value: "4096 16384 536870912" }
+  # - { name: net.ipv4.tcp_collapse_max_bytes, value: "6291456" }
