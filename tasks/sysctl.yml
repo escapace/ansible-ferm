@@ -3,20 +3,20 @@
 - name: set ipv4 forwarding
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
-    value: "{{ ferm_ipv4_forwarding | ternary('1','0') }}"
+    value: "{{ ferm_ipv4_forwarding | ternary('1', '0') }}"
     state: present
 
 - name: set ipv6 forwarding
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.forwarding
-    value: "{{ ferm_ipv6_forwarding | ternary('1','0') }}"
+    value: "{{ ferm_ipv6_forwarding | ternary('1', '0') }}"
     state: present
 
 - name: set ipv6 forwarding
   ansible.builtin.lineinfile:
     path: /etc/sysconfig/network
     regexp: "^IPV6FORWARDING="
-    line: "IPV6FORWARDING={{ ferm_ipv6_forwarding | ternary('yes','no') }}"
+    line: "IPV6FORWARDING={{ ferm_ipv6_forwarding | ternary('yes', 'no') }}"
     create: true
     owner: root
     group: root
@@ -25,7 +25,7 @@
 - name: set ipv6 forwarding by default
   ansible.posix.sysctl:
     name: net.ipv6.conf.default.forwarding
-    value: "{{ ferm_ipv6_forwarding | ternary('1','0') }}"
+    value: "{{ ferm_ipv6_forwarding | ternary('1', '0') }}"
     state: present
 
 - name: set ipv6 router advertisement

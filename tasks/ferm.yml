@@ -9,7 +9,7 @@
   no_log: true
   when: not ferm_role_debug|bool
 
-- include_tasks: dependencies.yml
+- ansible.builtin.include_tasks: dependencies.yml
 
 - name: make sure the directory for firewall rules exist
   ansible.builtin.file: path=/etc/ferm state=directory owner=root group=root mode=0700
@@ -94,8 +94,8 @@
   ansible.builtin.service: name=ferm enabled=yes
   when: not ferm_role_debug|bool
 
-- include_tasks: sysctl.yml
+- ansible.builtin.include_tasks: sysctl.yml
   when: not ferm_role_debug|bool
 
-- include_tasks: provider-ec2.yml
+- ansible.builtin.include_tasks: provider-ec2.yml
   when: provider is defined and provider == "ec2"
