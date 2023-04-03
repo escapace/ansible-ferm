@@ -11,6 +11,7 @@
     name: net.ipv6.conf.all.forwarding
     value: "{{ ferm_ipv6_forwarding | ternary('1', '0') }}"
     state: present
+  when: ferm_ipv6
 
 - name: set ipv6 forwarding
   ansible.builtin.lineinfile:
@@ -21,24 +22,28 @@
     owner: root
     group: root
     mode: 0644
+  when: ferm_ipv6
 
 - name: set ipv6 forwarding by default
   ansible.posix.sysctl:
     name: net.ipv6.conf.default.forwarding
     value: "{{ ferm_ipv6_forwarding | ternary('1', '0') }}"
     state: present
+  when: ferm_ipv6
 
 - name: set ipv6 router advertisement
   ansible.posix.sysctl:
     name: net.ipv6.conf.default.accept_ra
     value: "{{ ferm_ipv6_accept_ra }}"
     state: present
+  when: ferm_ipv6
 
 - name: set ipv6 router advertisement by default
   ansible.posix.sysctl:
     name: net.ipv6.conf.all.accept_ra
     value: "{{ ferm_ipv6_accept_ra }}"
     state: present
+  when: ferm_ipv6
 
 - name: set recommended kernel parameters
   ansible.posix.sysctl:
@@ -62,3 +67,13 @@
     state: present
   with_items: "{{ ferm_kernel_params_ipv4 }}"
   when: ferm_ipv4
+
+- name: disable ipv6
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items:
+    - { name: net.ipv6.conf.all.disable_ipv6, value: "1" }
+    - { name: net.ipv6.conf.default.disable_ipv6, value: "1" }
+  when: not ferm_ipv6
