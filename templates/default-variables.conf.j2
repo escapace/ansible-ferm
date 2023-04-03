@@ -1,8 +1,22 @@
+{% if ferm_ipv4 %}
 @def $DEFAULT_V4_CIDR = `ip -o -4 addr show $(ip -4 route show 0.0.0.0/0 | head -n 1 | awk '/default/ { print $5 }') scope global | awk '/inet/ { print $4 }'`;
 @def $DEFAULT_V4_DEV = `ip -4 route show 0.0.0.0/0 | head -n 1 | awk '/default/ { print $5 }'`;
 @def $DEFAULT_V4_IP = `ip -o -4 addr show $(ip -4 route show 0.0.0.0/0 | head -n 1 | awk '/default/ { print $5 }') scope global | awk '/inet/ { print $4 }' | cut -d/ -f1`;
+{% endif %}
+
+{% if ferm_ipv6 %}
 @def $DEFAULT_V6_CIDR = `ip -o -6 addr show $(ip -6 route show ::/0 | head -n 1 | awk '/default/ { print $5 }') scope global | awk '/inet6/ { print $4 }'`;
 @def $DEFAULT_V6_DEV = `ip -6 route show ::/0 | head -n 1 | awk '/default/ { print $5 }'`;
 @def $DEFAULT_V6_IP = `ip -o -6 addr show $(ip -6 route show ::/0 | head -n 1 | awk '/default/ { print $5 }') scope global | awk '/inet6/ { print $4 }' | cut -d/ -f1`;
+{% endif %}
+
+{% if ferm_ipv4 and ferm_ipv6 %}
 @def $DEFAULT_CIDR = ($DEFAULT_V4_CIDR $DEFAULT_V6_CIDR);
 @def $DEFAULT_IP = ($DEFAULT_V4_IP $DEFAULT_V6_IP);
+{% elif ferm_ipv6 %}
+@def $DEFAULT_CIDR = ($DEFAULT_V6_CIDR);
+@def $DEFAULT_IP = ($DEFAULT_V6_IP);
+{% elif ferm_ipv4 %}
+@def $DEFAULT_CIDR = ($DEFAULT_V4_CIDR);
+@def $DEFAULT_IP = ($DEFAULT_V4_IP);
+{% endif %}

@@ -46,3 +46,19 @@
     value: "{{ item.value }}"
     state: present
   with_items: "{{ ferm_kernel_params }}"
+
+- name: set recommended kernel parameters
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ ferm_kernel_params_ipv6 }}"
+  when: ferm_ipv6
+
+- name: set recommended kernel parameters
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    state: present
+  with_items: "{{ ferm_kernel_params_ipv4 }}"
+  when: ferm_ipv4

@@ -5,12 +5,27 @@
     name: escapace.aws_environment
 
 - name: copy ec2-metadata.conf
-  ansible.builtin.template: src=templates/ec2-metadata.conf.j2 dest=/etc/ferm/ferm.d/9000-ec2-metadata.conf owner=root group=root mode=0600
+  ansible.builtin.template:
+    src: templates/ec2-metadata.conf.j2
+    dest: /etc/ferm/ferm.d/9000-ec2-metadata.conf
+    owner: root
+    group: root
+    mode: 0600
 
 - name: create ec2-environment.conf variables
-  ansible.builtin.template: src=templates/ec2-environment.conf.j2 dest=/etc/ferm/vars.d/1010-ec2-environment.conf owner=root group=root mode=0600
+  ansible.builtin.template:
+    src: templates/ec2-environment.conf.j2
+    dest: /etc/ferm/vars.d/1010-ec2-environment.conf
+    owner: root
+    group: root
+    mode: 0600
 
 - name: ferm systemd drop-in
-  ansible.builtin.template: src=templates/ferm-service-ec2-environment.conf.j2 dest=/etc/systemd/system/ferm.service.d/ec2-environment.conf owner=root group=root mode=0644
+  ansible.builtin.template:
+    src: templates/ferm-service-ec2-environment.conf.j2
+    dest: /etc/systemd/system/ferm.service.d/ec2-environment.conf
+    owner: root
+    group: root
+    mode: 0644
   notify:
     - ferm daemon-reload
