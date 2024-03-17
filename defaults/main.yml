@@ -1,5 +1,4 @@
 ---
-
 ferm_ipv4: true
 ferm_ipv6: true
 
