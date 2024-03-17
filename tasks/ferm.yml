@@ -1,5 +1,4 @@
 ---
-
 - name: disable firewalld
   ansible.builtin.service:
     name: firewalld
@@ -17,7 +16,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0700
+    mode: "0700"
 
 - name: create config directory
   ansible.builtin.file:
@@ -25,7 +24,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0700
+    mode: "0700"
 
 - name: create config directory
   ansible.builtin.file:
@@ -33,7 +32,7 @@
     state: directory
     owner: root
     group: root
-    mode: 0700
+    mode: "0700"
 
 - name: include ferm.d directory
   ansible.builtin.lineinfile:
@@ -41,7 +40,7 @@
     line: "@include 'ferm.d/';"
     insertbefore: BOF
     create: true
-    mode: 0600
+    mode: "0600"
 
 - name: include vars.d directory
   ansible.builtin.lineinfile:
@@ -49,7 +48,7 @@
     line: "@include 'vars.d/';"
     insertbefore: BOF
     create: true
-    mode: 0600
+    mode: "0600"
 
 - name: create directory for ferm systemd drop-ins
   ansible.builtin.file:
@@ -57,7 +56,7 @@
     owner: root
     group: root
     state: directory
-    mode: 0755
+    mode: "0755"
 
 - name: create ferm service
   ansible.builtin.template:
@@ -65,7 +64,7 @@
     dest: /usr/lib/systemd/system/ferm.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify:
     - ferm daemon-reload
 
@@ -75,7 +74,7 @@
     dest: /usr/lib/systemd/system/ferm-pre.service
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify:
     - ferm daemon-reload
 
@@ -85,7 +84,7 @@
     dest: /etc/ferm/ferm-pre.conf
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
 
 - name: create the default ferm conf files
   ansible.builtin.template:
@@ -93,7 +92,7 @@
     dest: /etc/ferm/ferm.d/1000-default.conf
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
 
 - name: create the default ferm var files
   ansible.builtin.template:
@@ -101,7 +100,7 @@
     dest: /etc/ferm/vars.d/1000-default.conf
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
 
 # - name: enable NetworkManager-wait-online service
 #   service: name=NetworkManager-wait-online.service enabled=yes
@@ -111,7 +110,7 @@
   ansible.builtin.file:
     path: /opt/escapace-ferm/
     state: directory
-    mode: 0750
+    mode: "0750"
   when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
 
 - name: copy selinux policy
@@ -120,7 +119,7 @@
     dest: /opt/escapace-ferm/escapace-ferm.pp
     owner: root
     group: root
-    mode: 0640
+    mode: "0640"
   when: ansible_selinux and ansible_selinux.status == 'enabled' and (not ferm_role_debug|bool)
   register: ferm_selinux_policy
 

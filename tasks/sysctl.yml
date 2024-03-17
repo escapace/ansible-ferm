@@ -1,5 +1,4 @@
 ---
-
 - name: set ipv4 forwarding
   ansible.posix.sysctl:
     name: net.ipv4.ip_forward
@@ -16,12 +15,12 @@
 - name: set ipv6 forwarding
   ansible.builtin.lineinfile:
     path: /etc/sysconfig/network
-    regexp: "^IPV6FORWARDING="
-    line: "IPV6FORWARDING={{ ferm_ipv6_forwarding | ternary('yes', 'no') }}"
+    regexp: ^IPV6FORWARDING=
+    line: IPV6FORWARDING={{ ferm_ipv6_forwarding | ternary('yes', 'no') }}
     create: true
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   when: ferm_ipv6
 
 - name: set ipv6 forwarding by default

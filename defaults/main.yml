@@ -41,10 +41,10 @@ ferm_kernel_params_ipv4:
   - { name: net.ipv4.tcp_mtu_probing, value: "1" }
   - { name: net.ipv4.tcp_notsent_lowat, value: "131072" }
   - { name: net.ipv4.tcp_rfc1337, value: "1" }
-  - { name: net.ipv4.tcp_rmem, value: "8192 262144 536870912" }
+  - { name: net.ipv4.tcp_rmem, value: 8192 262144 536870912 }
   - { name: net.ipv4.tcp_slow_start_after_idle, value: "0" }
   - { name: net.ipv4.tcp_syncookies, value: "1" }
-  - { name: net.ipv4.tcp_wmem, value: "4096 16384 536870912" }
+  - { name: net.ipv4.tcp_wmem, value: 4096 16384 536870912 }
   - { name: net.ipv4.udp_rmem_min, value: "8192" }
   - { name: net.ipv4.udp_wmem_min, value: "8192" }
   # - { name: net.ipv4.tcp_collapse_max_bytes, value: "6291456" }

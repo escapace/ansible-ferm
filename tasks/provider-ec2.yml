@@ -1,5 +1,4 @@
 ---
-
 - name: include escapace.aws_environment role
   ansible.builtin.include_role:
     name: escapace.aws_environment
@@ -10,7 +9,16 @@
     dest: /etc/ferm/ferm.d/9000-ec2-metadata.conf
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
+
+- name: copy ec2-nat.conf
+  ansible.builtin.template:
+    src: templates/ec2-nat.conf.j2
+    dest: /etc/ferm/ferm.d/2000-ec2-nat.conf
+    owner: root
+    group: root
+    mode: "0600"
+  when: ferm_ec2_nat is defined and ferm_ec2_nat|bool
 
 - name: create ec2-environment.conf variables
   ansible.builtin.template:
@@ -18,7 +26,7 @@
     dest: /etc/ferm/vars.d/1010-ec2-environment.conf
     owner: root
     group: root
-    mode: 0600
+    mode: "0600"
 
 - name: ferm systemd drop-in
   ansible.builtin.template:
@@ -26,6 +34,6 @@
     dest: /etc/systemd/system/ferm.service.d/ec2-environment.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   notify:
     - ferm daemon-reload

@@ -1,0 +1,17 @@
+domain (ip) {
+  table filter {
+    chain FORWARD {
+      mod conntrack ctstate INVALID DROP;
+      mod conntrack ctstate (ESTABLISHED RELATED) ACCEPT;
+
+      saddr $EC2_INSTANCE_ETH0_IPV4_CIDR interface eth0 outerface eth0 daddr (10.0.0.0/8 172.16.0.0/12 192.168.0.0/16 100.64.0.0/10 169.254.0.0/16) DROP;
+      saddr $EC2_INSTANCE_ETH0_IPV4_CIDR interface eth0 outerface eth0 daddr !$EC2_INSTANCE_ETH0_IPV4_CIDR ACCEPT;
+    }
+  }
+
+  table nat {
+    chain POSTROUTING {
+      saddr $EC2_INSTANCE_ETH0_IPV4_CIDR outerface eth0 daddr !$EC2_INSTANCE_ETH0_IPV4_CIDR MASQUERADE;
+    }
+  }
+}

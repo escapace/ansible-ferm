@@ -1,8 +1,7 @@
 ---
-
 - name: install dependencies
   ansible.builtin.package:
-    name: ["iptables-nft", "gawk", "iproute"]
+    name: [iptables-nft, gawk, iproute]
     state: present
 
 - name: install ferm
